@@ -1,0 +1,33 @@
+{
+  "name": "emdash-plugin-i18n-manager",
+  "version": "0.1.0",
+  "description": "Language management plugin for EmDash CMS. Add, remove, enable/disable languages from the admin panel. Auto-injects language switcher and hreflang tags.",
+  "type": "module",
+  "main": "src/index.ts",
+  "exports": {
+    ".": "./src/index.ts",
+    "./admin": "./src/admin.tsx"
+  },
+  "files": ["src"],
+  "license": "MIT",
+  "keywords": [
+    "emdash",
+    "cms",
+    "plugin",
+    "i18n",
+    "internationalization",
+    "multilingual",
+    "language",
+    "locale",
+    "translation"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/artempronin/emdash-plugin-i18n-manager.git"
+  },
+  "peerDependencies": {
+    "astro": ">=6.0.0",
+    "emdash": ">=0.1.0",
+    "react": "^18.0.0 || ^19.0.0"
+  }
+}
