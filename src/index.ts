@@ -23,8 +23,8 @@ export interface Locale {
 	code: string;
 	label: string;
 	icon: string;
-	isDefault: boolean;
-	enabled: boolean;
+	isDefault: number; // 1 or 0 — SQLite cannot bind booleans
+	enabled: number; // 1 or 0
 	fallbackCode: string | null;
 	sortOrder: number;
 }
@@ -73,8 +73,8 @@ async function handleLocalesList(ctx: RouteContext) {
 			code: "en",
 			label: "English",
 			icon: "🇬🇧",
-			isDefault: true,
-			enabled: true,
+			isDefault: 1,
+			enabled: 1,
 			fallbackCode: null,
 			sortOrder: 0,
 		});
@@ -105,8 +105,8 @@ async function handleLocalesCreate(
 		code,
 		label,
 		icon: icon || "",
-		isDefault: false,
-		enabled: true,
+		isDefault: 0,
+		enabled: 1,
 		fallbackCode: fallbackCode ?? null,
 		sortOrder: count,
 	});
@@ -137,17 +137,17 @@ async function handleLocalesUpdate(
 	if (updates.fallbackCode !== undefined)
 		data.fallbackCode = updates.fallbackCode ?? null;
 	if (updates.enabled !== undefined) {
-		if (!updates.enabled && data.isDefault)
+		if (!updates.enabled && data.isDefault === 1 === 1)
 			throw new Error("Cannot disable default locale");
 		data.enabled = updates.enabled;
 	}
 	if (updates.isDefault === true) {
 		const all = await store.query({ limit: 100 });
 		for (const item of all.items) {
-			if (item.id !== code && item.data.isDefault) {
+			if (item.id !== code && item.data.isDefault === 1) {
 				await store.put(item.id, {
 					...item.data,
-					isDefault: false,
+					isDefault: 0,
 				});
 			}
 		}
@@ -228,8 +228,8 @@ export function createPlugin() {
 					code: "en",
 					label: "English",
 					icon: "\u{1F1EC}\u{1F1E7}",
-					isDefault: true,
-					enabled: true,
+					isDefault: 1,
+					enabled: 1,
 					fallbackCode: null,
 					sortOrder: 0,
 				});
@@ -244,7 +244,7 @@ export function createPlugin() {
 				if (items.length <= 1) return null;
 
 				const defaultLocale =
-					items.find((l) => l.data.isDefault)?.data.code ?? "en";
+					items.find((l) => l.data.isDefault === 1)?.data.code ?? "en";
 
 				const links = items.map((l) => ({
 					kind: "link" as const,

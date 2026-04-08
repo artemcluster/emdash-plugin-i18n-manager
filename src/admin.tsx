@@ -25,8 +25,8 @@ interface Locale {
 	code: string;
 	label: string;
 	icon: string;
-	isDefault: boolean;
-	enabled: boolean;
+	isDefault: number;
+	enabled: number;
 	fallbackCode: string | null;
 	sortOrder: number;
 }
@@ -60,6 +60,7 @@ function LanguagesPage() {
 	const [editingCode, setEditingCode] = React.useState<string | null>(null);
 	const [editLabel, setEditLabel] = React.useState("");
 	const [editIcon, setEditIcon] = React.useState("");
+	const [editFallback, setEditFallback] = React.useState<string | null>(null);
 	const [searchQuery, setSearchQuery] = React.useState("");
 	const [confirmDelete, setConfirmDelete] = React.useState<string | null>(null);
 
@@ -106,7 +107,7 @@ function LanguagesPage() {
 		try {
 			const res = await apiPost("locales/update", {
 				code: locale.code,
-				enabled: !locale.enabled,
+				enabled: locale.enabled !== 1,
 			});
 			if (!res.ok) {
 				setError(await getErrorMessage(res, "Failed to update locale"));
@@ -155,6 +156,7 @@ function LanguagesPage() {
 		setEditingCode(locale.code);
 		setEditLabel(locale.label);
 		setEditIcon(locale.icon);
+		setEditFallback(locale.fallbackCode);
 	};
 
 	const handleSaveEdit = async () => {
@@ -164,6 +166,7 @@ function LanguagesPage() {
 				code: editingCode,
 				label: editLabel,
 				icon: editIcon,
+				fallbackCode: editFallback,
 			});
 			if (!res.ok) {
 				setError(await getErrorMessage(res, "Failed to update locale"));
@@ -329,6 +332,19 @@ function LanguagesPage() {
 										letterSpacing: "0.05em",
 									}}
 								>
+									Fallback
+								</th>
+								<th
+									style={{
+										padding: "10px 16px",
+										textAlign: "left",
+										fontSize: "12px",
+										fontWeight: 600,
+										color: "#6b7280",
+										textTransform: "uppercase",
+										letterSpacing: "0.05em",
+									}}
+								>
 									Status
 								</th>
 								<th
@@ -406,9 +422,27 @@ function LanguagesPage() {
 											{locale.code}
 										</code>
 									</td>
+									<td style={{ padding: "12px 16px" }}>
+										{editingCode === locale.code ? (
+											<select
+												value={editFallback ?? ""}
+												onChange={(e) => setEditFallback(e.target.value || null)}
+												style={{ padding: "4px 8px", fontSize: "13px", border: "1px solid #d1d5db", borderRadius: "4px", width: "100%" }}
+											>
+												<option value="">None</option>
+												{locales.filter(l => l.code !== locale.code).map(l => (
+													<option key={l.code} value={l.code}>{l.icon} {l.label} ({l.code})</option>
+												))}
+											</select>
+										) : (
+											<span style={{ fontSize: "13px", color: locale.fallbackCode ? "#374151" : "#9ca3af" }}>
+												{locale.fallbackCode ? locales.find(l => l.code === locale.fallbackCode)?.label ?? locale.fallbackCode : "—"}
+											</span>
+										)}
+									</td>
 									<td style={{ padding: "12px 16px", textAlign: "center" }}>
 										<div style={{ display: "flex", gap: "6px", justifyContent: "center" }}>
-											{locale.isDefault && (
+											{locale.isDefault === 1 && (
 												<span
 													style={{
 														display: "inline-block",
@@ -429,12 +463,12 @@ function LanguagesPage() {
 													padding: "2px 8px",
 													fontSize: "11px",
 													fontWeight: 600,
-													color: locale.enabled ? "#059669" : "#dc2626",
-													backgroundColor: locale.enabled ? "#ecfdf5" : "#fef2f2",
+													color: locale.enabled === 1 ? "#059669" : "#dc2626",
+													backgroundColor: locale.enabled === 1 ? "#ecfdf5" : "#fef2f2",
 													borderRadius: "9999px",
 												}}
 											>
-												{locale.enabled ? "Enabled" : "Disabled"}
+												{locale.enabled === 1 ? "Enabled" : "Disabled"}
 											</span>
 										</div>
 									</td>
@@ -493,21 +527,21 @@ function LanguagesPage() {
 												<button
 													type="button"
 													onClick={() => handleToggleEnabled(locale)}
-													title={locale.enabled ? "Disable" : "Enable"}
+													title={locale.enabled === 1 ? "Disable" : "Enable"}
 													style={{
 														padding: "4px 8px",
 														fontSize: "13px",
-														color: locale.enabled ? "#dc2626" : "#059669",
-														backgroundColor: locale.enabled ? "#fef2f2" : "#ecfdf5",
+														color: locale.enabled === 1 ? "#dc2626" : "#059669",
+														backgroundColor: locale.enabled === 1 ? "#fef2f2" : "#ecfdf5",
 														border: "1px solid",
-														borderColor: locale.enabled ? "#fecaca" : "#a7f3d0",
+														borderColor: locale.enabled === 1 ? "#fecaca" : "#a7f3d0",
 														borderRadius: "4px",
 														cursor: "pointer",
 													}}
 												>
-													{locale.enabled ? "Disable" : "Enable"}
+													{locale.enabled === 1 ? "Disable" : "Enable"}
 												</button>
-												{!locale.isDefault && (
+												{!locale.isDefault === 1 && (
 													<>
 														<button
 															type="button"
