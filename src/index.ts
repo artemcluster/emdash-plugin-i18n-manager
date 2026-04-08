@@ -151,8 +151,8 @@ async function handleLocalesUpdate(
 				});
 			}
 		}
-		data.isDefault = true;
-		data.enabled = true;
+		data.isDefault = 1;
+		data.enabled = 1;
 	}
 
 	await store.put(code, data);

@@ -541,7 +541,7 @@ function LanguagesPage() {
 												>
 													{locale.enabled === 1 ? "Disable" : "Enable"}
 												</button>
-												{!locale.isDefault === 1 && (
+												{locale.isDefault !== 1 && (
 													<>
 														<button
 															type="button"
