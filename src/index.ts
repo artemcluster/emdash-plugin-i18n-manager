@@ -62,10 +62,27 @@ export function i18nManagerPlugin(
 // =============================================================================
 
 async function handleLocalesList(ctx: RouteContext) {
-	const result = await locales(ctx).query({
+	const store = locales(ctx);
+	let result = await store.query({
 		orderBy: { sortOrder: "asc" },
 		limit: 100,
 	});
+	// Seed default locale if storage is empty
+	if (result.items.length === 0) {
+		await store.put("en", {
+			code: "en",
+			label: "English",
+			icon: "🇬🇧",
+			isDefault: true,
+			enabled: true,
+			fallbackCode: null,
+			sortOrder: 0,
+		});
+		result = await store.query({
+			orderBy: { sortOrder: "asc" },
+			limit: 100,
+		});
+	}
 	return { locales: result.items.map((i) => i.data) };
 }
 
