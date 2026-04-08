@@ -55,6 +55,7 @@ function LanguagesPage() {
 	const [locales, setLocales] = React.useState<Locale[]>([]);
 	const [loading, setLoading] = React.useState(true);
 	const [error, setError] = React.useState<string | null>(null);
+	const [success, setSuccess] = React.useState<string | null>(null);
 	const [showAddDialog, setShowAddDialog] = React.useState(false);
 	const [editingCode, setEditingCode] = React.useState<string | null>(null);
 	const [editLabel, setEditLabel] = React.useState("");
@@ -79,6 +80,10 @@ function LanguagesPage() {
 	}, []);
 
 	React.useEffect(() => {
+		if (success) { const t = setTimeout(() => setSuccess(null), 3000); return () => clearTimeout(t); }
+	}, [success]);
+
+	React.useEffect(() => {
 		fetchLocales();
 	}, [fetchLocales]);
 
@@ -90,6 +95,7 @@ function LanguagesPage() {
 				return;
 			}
 			setShowAddDialog(false);
+			setSuccess("Language added");
 			await fetchLocales();
 		} catch (err) {
 			setError(err instanceof Error ? err.message : "Failed to add locale");
@@ -106,6 +112,7 @@ function LanguagesPage() {
 				setError(await getErrorMessage(res, "Failed to update locale"));
 				return;
 			}
+			setSuccess("Language updated");
 			await fetchLocales();
 		} catch (err) {
 			setError(err instanceof Error ? err.message : "Failed to update locale");
@@ -122,6 +129,7 @@ function LanguagesPage() {
 				setError(await getErrorMessage(res, "Failed to set default"));
 				return;
 			}
+			setSuccess("Default language changed");
 			await fetchLocales();
 		} catch (err) {
 			setError(err instanceof Error ? err.message : "Failed to set default");
@@ -136,6 +144,7 @@ function LanguagesPage() {
 				return;
 			}
 			setConfirmDelete(null);
+			setSuccess("Language deleted");
 			await fetchLocales();
 		} catch (err) {
 			setError(err instanceof Error ? err.message : "Failed to delete locale");
@@ -161,6 +170,7 @@ function LanguagesPage() {
 				return;
 			}
 			setEditingCode(null);
+			setSuccess("Language updated");
 			await fetchLocales();
 		} catch (err) {
 			setError(err instanceof Error ? err.message : "Failed to update locale");
@@ -215,6 +225,12 @@ function LanguagesPage() {
 					+ Add Language
 				</button>
 			</div>
+
+			{success && (
+				<div style={{ padding: "12px 16px", backgroundColor: "#f0fdf4", border: "1px solid #bbf7d0", borderRadius: "8px", color: "#15803d", fontSize: "14px", display: "flex", alignItems: "center", gap: "8px" }}>
+					<span>✓</span> {success}
+				</div>
+			)}
 
 			{error && (
 				<div

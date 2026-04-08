@@ -142,11 +142,9 @@ async function handleLocalesUpdate(
 		data.enabled = updates.enabled;
 	}
 	if (updates.isDefault === true) {
-		const all = await store.query({
-			where: { isDefault: true },
-		});
+		const all = await store.query({ limit: 100 });
 		for (const item of all.items) {
-			if (item.id !== code) {
+			if (item.id !== code && item.data.isDefault) {
 				await store.put(item.id, {
 					...item.data,
 					isDefault: false,
