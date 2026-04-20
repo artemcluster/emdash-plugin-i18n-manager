@@ -1,4 +1,4 @@
-# emdash-plugin-i18n-manager
+# emdash-plugin-i18n-manager-Multilingual
 
 Language management plugin for [EmDash CMS](https://emdashcms.com). Manage site languages directly from the admin panel — no config files, no restarts.
 
